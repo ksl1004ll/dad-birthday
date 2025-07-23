@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>爸爸生日快樂！</title>
+  <div class="background-slideshow">
+  <img src="photo1.jpg" class="bg-blur active">
+  <img src="photo1.jpg" class="bg-front active">
+</div>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: "微軟正黑體", sans-serif;
+    background: url('你的照片.jpg') center center / cover no-repeat fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+  
+
+  #message {
+    max-width: 80%;
+    font-size: 24px;
+    line-height: 1.8;
+    white-space: pre-line;
+    background-color: rgba(180, 30, 30, 0.295); /* 🍷紅色半透明背景 */
+    color: white;
+    text-shadow: 1px 1px 3px #000;
+    padding: 30px;
+    border-radius: 10px;
+  }
+
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 重點！讓圖片填滿容器而不變形 */
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  z-index: -2;
+}
+
+.bg.active {
+  opacity: 1;
+}
+  .background-slideshow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.background-slideshow img.bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 改為完整顯示照片 */
+  background-color: #ffffff; /* 背景填黑或紅避免空白 */
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.background-slideshow img.bg.active {
+  opacity: 1;
+}
+.bg-blur {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(10px) brightness(0.7);
+  z-index: 1;
+}
+
+.bg-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+}
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div id="message"></div>
+<!-- 新增背景圖層 -->
+  <div class="background-slideshow">
+    <img src="Birth/photo1.jpg" class="bg active">
+    <img src="Birth/photo2.jpg" class="bg">
+    <img src="Birth/photo3.jpg" class="bg">
+    <img src="Birth/photo4.jpg" class="bg">
+    <img src="Birth/photo5.jpg" class="bg">
+    <img src="Birth/photo6.jpg" class="bg">
+    <img src="Birth/photo7.jpg" class="bg">
+    <img src="Birth/photo8.jpg" class="bg">
+    <img src="Birth/photo9.jpg" class="bg">
+    <img src="Birth/photo10.jpg" class="bg">
+    <img src="Birth/photo11.jpg" class="bg">
+    <img src="Birth/photo12.jpg" class="bg">
+  </div>
+
+<script>
+  // 訊息內容
+  const message = `爸爸：
+
+謝謝你一路以來辛苦的把我們拉拔長大
+
+這些年經歷了很多事，
+有時候我們之間或許會不知道該怎麼跟對方說話，
+但不管怎樣我相信我們都還是知道彼此的心意，
+
+我知道你其實也承擔很多，也一直為我們在努力，
+但現在我也慢慢長大了！
+也會努力讓你以後可以不用煩惱這麼多、過你想過的日子
+
+生日快樂🎂
+I LOVE YOU`;
+
+  // 打字效果
+  let i = 0;
+  const speed = 50;
+  function typeWriter() {
+    if (i < message.length) {
+      document.getElementById("message").innerHTML += message.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+  typeWriter();
+
+  // 彩帶效果
+  const confetti = document.getElementById('confetti');
+  const ctx = confetti.getContext('2d');
+  confetti.width = window.innerWidth;
+  confetti.height = window.innerHeight;
+
+  const pieces = [];
+  for (let i = 0; i < 150; i++) {
+    pieces.push({
+      x: Math.random() * confetti.width,
+      y: Math.random() * confetti.height,
+      r: Math.random() * 20 + 5,
+      d: Math.random() * 1 + 1,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      tilt: Math.random() * 10 - 10,
+      tiltAngle: 0,
+      tiltAngleIncrement: (Math.random() * 0.07) + 0.05
+    });
+  }
+  
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, confetti.width, confetti.height);
+    pieces.forEach(p => {
+      ctx.beginPath();
+      ctx.lineWidth = p.r / 2;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+      ctx.stroke();
+    });
+    updateConfetti();
+    requestAnimationFrame(drawConfetti);
+  }
+
+  function updateConfetti() {
+    pieces.forEach(p => {
+      p.tiltAngle += p.tiltAngleIncrement;
+      p.y += p.d;
+      p.tilt = Math.sin(p.tiltAngle) * 15;
+
+      if (p.y > confetti.height) {
+        p.y = -10;
+        p.x = Math.random() * confetti.width;
+      }
+    });
+  }
+
+  drawConfetti();
+  
+  // 🎞 背景照片輪播
+  let current = 0;
+  const slides = document.querySelectorAll('.background-slideshow img.bg');
+
+  function showNextSlide() {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }
+
+  setInterval(showNextSlide, 3000); // 每5秒換一張
+</script>
+
+</body>
+</html>
